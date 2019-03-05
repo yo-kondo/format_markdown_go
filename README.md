@@ -1,0 +1,2 @@
+# format_markdown_go
+Markdownをmarkdownlintにあわせて修正します。go言語版
