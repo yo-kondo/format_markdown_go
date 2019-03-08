@@ -2,9 +2,12 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 )
@@ -21,10 +24,18 @@ func main() {
 	existDirectory(conf.TargetDir)
 	files := getMarkdownFile(conf.TargetDir)
 
-	// TODO: 作成中
+	for _, file := range files {
+		lines := getAllText(file)
 
-	// TODO: debug
-	fmt.Printf("targetDir: %#v", files)
+		lines = addHeaderAfterEmptyLine(lines)
+		lines = deleteQuoteEmpty(lines)
+		lines = deleteDuplicationEmpty(lines)
+
+		// TODO: debug
+		fmt.Printf("targetDir: %#v", lines)
+	}
+
+	// TODO: 作成中
 }
 
 // 設定ファイル settings.toml を読み込みます。
@@ -68,4 +79,69 @@ func getMarkdownFile(dir string) []string {
 		log.Fatal("ファイル名の取得でエラーが発生しました。: ", err1)
 	}
 	return files
+}
+
+// 指定したファイルを行単位で読み込みます。
+func getAllText(fileName string) []string {
+	data, err := ioutil.ReadFile(fileName)
+	if err != nil {
+		log.Fatal("ファイルの読み込みでエラーが発生しました。: ", err)
+	}
+	return strings.Split(string(data), "\n")
+}
+
+var regHeader = regexp.MustCompile(`^#+ `)
+
+// 見出し（#、##、###など）の下に空行を追加します。
+func addHeaderAfterEmptyLine(lines []string) []string {
+	var rtnLines []string
+
+	for i, line := range lines {
+		if regHeader.MatchString(line) {
+			if lines[i+1] != "" {
+				rtnLines = append(rtnLines, line)
+				rtnLines = append(rtnLines, "")
+				continue
+			}
+		}
+		rtnLines = append(rtnLines, line)
+	}
+	return rtnLines
+}
+
+var regQuote = regexp.MustCompile(`> $`)
+
+// >だけの行は後ろのスペースを除去します。
+func deleteQuoteEmpty(lines []string) []string {
+	var rtnLines []string
+
+	for _, line := range lines {
+		if regQuote.MatchString(line) {
+			rtnLines = append(rtnLines, strings.TrimRight(line, " "))
+		} else {
+			rtnLines = append(rtnLines, line)
+		}
+	}
+	return rtnLines
+}
+
+// 2つ連続した空行を1つにします。
+func deleteDuplicationEmpty(lines []string) []string {
+	var rtnLines []string
+	isEmpty := false
+
+	for _, line := range lines {
+
+		if isEmpty && line == "" {
+			continue
+		}
+
+		if line == "" {
+			isEmpty = true
+		} else {
+			isEmpty = false
+		}
+		rtnLines = append(rtnLines, line)
+	}
+	return rtnLines
 }
