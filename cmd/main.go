@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"format_markdown_go/cmd/info"
 	"io/ioutil"
 	"log"
 	"os"
@@ -29,6 +30,9 @@ func main() {
 
 		lines = addHeaderAfterEmptyLine(lines)
 		lines = deleteQuoteEmpty(lines)
+
+		// 基本情報を整形
+		lines = info.ChangeInformation(lines)
 		lines = deleteDuplicationEmpty(lines)
 
 		// TODO: debug

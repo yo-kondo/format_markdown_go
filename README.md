@@ -1,6 +1,6 @@
 # format_markdown_go
 
-Markdownをmarkdownlintにあわせて修正します。go言語版。
+Markdownをmarkdownlintにあわせて修正する。go言語版。
 
 ## 詳細仕様
 
@@ -20,4 +20,42 @@ targetDir="" # 変換対象のディレクトリ
 
 ## 基本情報の修正
 
-TODO: 何をどう変更するのかを書く
+``` markdown
+# タイトル
+
+## 基本情報
+
+表紙 :\
+![表紙](画像のパス)\
+著者 : 著者\
+出版社 : 出版社\
+ISBN-10 : 9999999999\
+ISBN-13 : 999-9999999999\
+ASIN : XXXXXXXXXX\
+発売日 : yyyy/mm/dd\
+Amazon : [amszonへのリンク]()\
+読了日 : yyyy/mm/dd\
+その他 : 
+```
+
+上記テキストを以下のテキストに変換する。
+
+``` markdown
+# タイトル
+
+![画像](画像のパス)
+
+---
+
+* Date: yyyy/mm/dd
+* Author: 著者
+* Publisher: 出版社
+* ISBN-10: 9999999999
+* ISBN-13: 999-9999999999
+* ASIN: XXXXXXXXXX
+* ReleaseDate: yyyy/mm/dd
+* Link: [amszonへのリンク]()
+* Tags:
+
+---
+```
