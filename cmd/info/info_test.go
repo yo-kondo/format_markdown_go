@@ -2,9 +2,9 @@ package info
 
 import (
 	"fmt"
+	"format_markdown_go/cmd/date"
 	"reflect"
 	"testing"
-	"time"
 )
 
 func TestCreateInformation_Empty(t *testing.T) {
@@ -47,13 +47,13 @@ func TestCreateInformation1(t *testing.T) {
 		frontImage: []string{
 			"![表紙](画像のパス)",
 		},
-		readingDate: time.Date(2019, 3, 11, 0, 0, 0, 0, time.Local),
+		readingDate: date.NewDate(2019, 3, 11),
 		author:      "著者",
 		publisher:   "出版社",
 		isbn10:      "9999999999",
 		isbn13:      "999-9999999999",
 		asin:        "XXXXXXXXXX",
-		releaseDate: time.Date(2018, 2, 15, 0, 0, 0, 0, time.Local),
+		releaseDate: date.NewDate(2018, 2, 15),
 		link:        "[amszonへのリンク](https://hogehoge.com)",
 		tags:        "タグ1, タグ2",
 	}
@@ -73,8 +73,7 @@ func structEqual(x, y information) bool {
 	if !reflect.DeepEqual(x.frontImage, y.frontImage) {
 		return false
 	}
-	if x.readingDate.Format("2006/01/02") != y.readingDate.Format("2006/01/02") {
-		// 時刻は使用しないため、日付のみ比較
+	if !date.EqualDate(x.readingDate, y.readingDate) {
 		return false
 	}
 	if x.author != y.author {
@@ -92,8 +91,7 @@ func structEqual(x, y information) bool {
 	if x.asin != y.asin {
 		return false
 	}
-	if x.releaseDate.Format("2006/01/02") != y.releaseDate.Format("2006/01/02") {
-		// 時刻は使用しないため、日付のみ比較
+	if !date.EqualDate(x.releaseDate, y.releaseDate){
 		return false
 	}
 	if x.link != y.link {
